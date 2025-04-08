@@ -4,24 +4,21 @@ import (
 	"fmt"
 	"github.com/poportss/jackportcs/internal/dto"
 	"github.com/poportss/jackportcs/internal/models"
-	"github.com/poportss/jackportcs/internal/utils"
-	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
-func (s *srv) login(login dto.Login) (string, error) {
-	var user models.User
-	if err := s.DB.Where("username = ?", login.Username).First(&user).Error; err != nil {
-		return "", fmt.Errorf("Usuário não encontrado")
+func (s *srv) AuthenticateUser(login dto.Login) (*models.User, error) {
+	var user *models.User
+	if err := s.DB.Where("name = ?", login.Username).First(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("usuário não encontrado")
+		}
+		return nil, err
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(login.Password)); err != nil {
-		return "", fmt.Errorf("Senha incorreta")
-	}
+	//if !utils.CheckPasswordHash(login.Password, user.Password) {
+	//	return nil, fmt.Errorf("senha inválida")
+	//}
 
-	token, err := utils.GenerateToken(user.Username)
-	if err != nil {
-		return "", fmt.Errorf("Erro ao gerar token")
-	}
-
-	return token, nil
+	return user, nil
 }

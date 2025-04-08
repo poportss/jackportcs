@@ -14,7 +14,7 @@ func (v *v1) Migrate(db *gorm.DB) error {
 			updated_at TIMESTAMP WITH TIME ZONE,
 			deleted_at TIMESTAMP WITH TIME ZONE,
 			service VARCHAR(255) NOT NULL,
-			version INT NOT NULL UNIQUE
+			version INT NOT NULL
 		)`
 
 	if err := db.Exec(createTableSQL).Error; err != nil {

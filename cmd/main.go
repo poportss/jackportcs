@@ -6,6 +6,9 @@ import (
 	"github.com/poportss/jackportcs/internal/baseservice"
 	"github.com/poportss/jackportcs/internal/database"
 	"github.com/poportss/jackportcs/internal/pkg/auth"
+	"github.com/poportss/jackportcs/internal/pkg/cases"
+	"github.com/poportss/jackportcs/internal/pkg/skins"
+	"github.com/poportss/jackportcs/internal/pkg/user"
 	"github.com/poportss/jackportcs/internal/routes"
 	"os"
 )
@@ -19,15 +22,15 @@ func main() {
 
 	r := gin.Default()
 
-	// Criar BaseService e injetar no serviço
 	baseService := baseservice.NewBaseService(db)
 	auth.AuthNewService(baseService)
+	cases.CasesNewService(baseService)
+	skins.SkinNewService(baseService)
+	user.UserNewService(baseService)
 
-	// 4️⃣ Configurar as rotas
-	routes.SetupRoutes(r, db)
+	routes.SetupRoutes(r, baseService)
 
 	apiPort := os.Getenv("API_PORT")
-	// Se uma variável não estiver definida, exibe uma mensagem
 	if apiPort == "" {
 		fmt.Println("⚠️ API_PORT não definida! Usando padrão: 8080")
 		apiPort = "8080"

@@ -1,9 +1,17 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/gofrs/uuid"
+)
 
 type User struct {
-	gorm.Model
-	Username string `gorm:"unique"`
-	Password string
+	Base
+	Name        string    ` json:"name,omitempty" gorm:"not null"`
+	TradeLink   string    ` json:"tradeLink,omitempty" gorm:"not null"`
+	Password    string    ` json:"password,omitempty" gorm:"not null"`
+	WalletID    uuid.UUID `json:"walletID,omitempty"`
+	InventoryID uuid.UUID `json:"inventoryID,omitempty"`
+
+	Wallet    Wallet    `json:"wallet" gorm:"foreignKey:WalletID" `
+	Inventory Inventory ` json:"inventory"gorm:"foreignKey:InventoryID" `
 }

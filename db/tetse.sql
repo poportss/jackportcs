@@ -1,5 +1,8 @@
-SELECT * FROM "schema_versions" WHERE service = 'auth' AND "schema_versions"."deleted_at" IS NULL ORDER BY version DESC,"schema_versions"."id" LIMIT 1
-
-SHOW search_path;
-
-ALTER ROLE jackportcs_dev SET search_path TO jackportcs_schema;
+CREATE TABLE IF NOT EXISTS schema_versions (
+                                               id UUID PRIMARY KEY,
+                                               created_at TIMESTAMP WITH TIME ZONE,
+                                               updated_at TIMESTAMP WITH TIME ZONE,
+                                               deleted_at TIMESTAMP WITH TIME ZONE,
+                                               service VARCHAR(255) NOT NULL,
+                                               version INT NOT NULL
+)

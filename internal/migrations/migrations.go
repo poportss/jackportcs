@@ -23,12 +23,11 @@ func Migrate(db *gorm.DB, name string, versions []Versions) error {
 	db.Raw("SELECT current_database()").Scan(&dbName)
 	log.Printf("🚀 Conectado ao banco de dados: %s", dbName)
 
-	// Buscar a última versão aplicada do serviço no banco
 	if err := db.Where("service = ?", name).Order("version DESC").First(&schema).Error; err != nil {
 		if err != gorm.ErrRecordNotFound {
 			return err
 		}
-		schema.Version = 1
+		schema.Version = 2
 	}
 
 	for _, item := range versions {
@@ -42,7 +41,7 @@ func Migrate(db *gorm.DB, name string, versions []Versions) error {
 		}
 
 		// Se a versão já foi aplicada, pula para a próxima
-		if schema.Version >= index {
+		if schema.Version <= index {
 			continue
 		}
 

@@ -11,7 +11,6 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-// ConnectDatabase estabelece conexão com o banco de dados
 func ConnectDatabase() (*gorm.DB, error) {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
@@ -37,16 +36,18 @@ func ConnectDatabase() (*gorm.DB, error) {
 	}
 
 	maxConnStr := os.Getenv("DB_MAX_CONN")
-	// Definir um valor padrão para maxConn se estiver vazio
 	maxConn, err := strconv.Atoi(maxConnStr)
 	if err != nil || maxConn <= 0 {
-		maxConn = 10 // Valor padrão caso não seja possível converter
+		maxConn = 10
 	}
 
 	base.SetMaxIdleConns(maxConn)
 	base.SetMaxOpenConns(maxConn / 2)
-	dsn := base.Stats() // Isso não retorna o nome do banco, mas confirma a conexão ativa
-	log.Println("✅ Conectado ao banco de dados com sucesso!")
-	log.Println(dsn)
+
+	if err := base.Ping(); err != nil {
+		log.Fatal("❌ Erro ao conectar no banco:", err)
+	}
+	log.Println("✅ Banco de dados conectado e respondendo!")
+
 	return db, nil
 }

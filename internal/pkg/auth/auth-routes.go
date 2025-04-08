@@ -1,11 +1,13 @@
 package auth
 
 import (
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/poportss/jackportcs/internal/baseservice"
 	"github.com/poportss/jackportcs/internal/migrations"
-	"github.com/poportss/jackportcs/internal/pkg/auth/migrations"
+	"github.com/poportss/jackportcs/internal/pkg/auth/migration"
 	"gorm.io/gorm"
+	"net/http"
 )
 
 type srv struct {
@@ -23,11 +25,18 @@ func AuthNewService(base *baseservice.BaseService) *srv {
 }
 
 // RegisterAuthRoutes adiciona as rotas de autenticação ao router principal
-func ConfigureRoutes(r *gin.Engine, db *gorm.DB) {
-	handler := srv{baseservice.NewBaseService(db)}
-
-	authRoutes := r.Group("/auth")
+func ConfigureRoutes(r *gin.Engine, db *gorm.DB, jwtMiddleware *jwt.GinJWTMiddleware) {
+	authRoutes := r.Group("/api/auth")
 	{
-		authRoutes.POST("/login", handler.LoginHandler)
+		authRoutes.POST("/login", jwtMiddleware.LoginHandler)
+		authRoutes.GET("/refresh_token", jwtMiddleware.RefreshHandler)
+
+		authRoutes.Use(jwtMiddleware.MiddlewareFunc())
+		{
+			authRoutes.GET("/validate", func(c *gin.Context) {
+				claims := jwt.ExtractClaims(c)
+				c.JSON(http.StatusOK, gin.H{"claims": claims})
+			})
+		}
 	}
 }

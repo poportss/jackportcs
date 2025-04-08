@@ -1,0 +1,20 @@
+FROM golang:1.23.4 AS builder
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+# Compilação otimizada para produção (binário menor, sem simbolização de debug)
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o main ./cmd/main.go
+
+FROM debian:bookworm-slim
+
+WORKDIR /root/
+COPY --from=builder /app/main .
+
+EXPOSE 8080
+
+CMD ["./main"]

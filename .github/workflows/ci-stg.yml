@@ -1,0 +1,29 @@
+name: CI - Staging
+
+on:
+  push:
+    branches:
+      - stg
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      APP_STAGE: stg
+      DB_CONN: ${{ secrets.STG_DB_CONN }}
+      DB_MAX_CONN: ${{ secrets.STG_DB_MAX_CONN }}
+      API_PORT: ${{ secrets.STG_API_PORT }}
+
+
+      steps:
+      - name: Checkout Código
+        uses: actions/checkout@v3
+
+      - name: Configurar Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.23.4
+
+      - name: Build Docker (STG)
+        run: docker build -f build/Dockerfile.stg -t myapp-stg .

@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-
+	//testando o bui;d
 	db, err := database.ConnectDatabase()
 	if err != nil {
 		return

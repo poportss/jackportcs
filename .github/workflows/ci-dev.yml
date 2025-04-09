@@ -14,7 +14,8 @@ jobs:
       DB_CONN: ${{ secrets.DEV_DB_CONN }}
       DB_MAX_CONN: ${{ secrets.DEV_DB_MAX_CONN }}
       API_PORT: ${{ secrets.DEV_API_PORT }}
-
+      APP_PAGARME_API: ${{ secrets.DEV_PP_PAGARME_API }}
+      STEAM_WEB_API_KEY: ${{ secrets.DEV_STEAM_WEB_API_KEY }}
 
 
     steps:

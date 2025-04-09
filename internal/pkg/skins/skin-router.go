@@ -6,7 +6,6 @@ import (
 	"github.com/poportss/jackportcs/internal/baseservice"
 	"github.com/poportss/jackportcs/internal/migrations"
 	"github.com/poportss/jackportcs/internal/pkg/skins/migration"
-	"gorm.io/gorm"
 )
 
 type srv struct {
@@ -22,15 +21,15 @@ func SkinNewService(base *baseservice.BaseService) *srv {
 	return &srv{BaseService: base}
 }
 
-func ConfigureRoutes(r *gin.Engine, db *gorm.DB, jwtMiddleware *jwt.GinJWTMiddleware) {
-	handler := srv{baseservice.NewBaseService(db)}
+func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware *jwt.GinJWTMiddleware) {
+	service := SkinNewService(base)
 
 	api := r.Group("/api")
 
 	skinRoutes := api.Group("/skin")
 	skinRoutes.Use(jwtMiddleware.MiddlewareFunc())
 	{
-		skinRoutes.POST("/createSkin", handler.CreateCaseHandler)
-		skinRoutes.GET("/listAllSkins", handler.ListAllSkinsHandler)
+		skinRoutes.POST("/createSkin", service.CreateCaseHandler)
+		skinRoutes.GET("/listAllSkins", service.ListAllSkinsHandler)
 	}
 }

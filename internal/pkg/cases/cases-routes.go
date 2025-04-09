@@ -6,7 +6,6 @@ import (
 	"github.com/poportss/jackportcs/internal/baseservice"
 	"github.com/poportss/jackportcs/internal/migrations"
 	"github.com/poportss/jackportcs/internal/pkg/cases/migration"
-	"gorm.io/gorm"
 )
 
 type srv struct {
@@ -22,16 +21,16 @@ func CasesNewService(base *baseservice.BaseService) *srv {
 	return &srv{BaseService: base}
 }
 
-func ConfigureRoutes(r *gin.Engine, db *gorm.DB, jwtMiddleware *jwt.GinJWTMiddleware) {
-	handler := srv{baseservice.NewBaseService(db)}
+func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware *jwt.GinJWTMiddleware) {
+	service := CasesNewService(base)
 
 	api := r.Group("/api")
 
 	casesRoutes := api.Group("/cases")
 	casesRoutes.Use(jwtMiddleware.MiddlewareFunc())
 	{
-		casesRoutes.POST("/createCase", handler.CreateCaseHandler)
-		casesRoutes.GET("/listAllCases", handler.ListAllCasesHandler)
+		casesRoutes.POST("/createCase", service.CreateCaseHandler)
+		casesRoutes.GET("/listAllCases", service.ListAllCasesHandler)
 	}
 
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/poportss/jackportcs/internal/baseservice"
 	"github.com/poportss/jackportcs/internal/migrations"
 	"github.com/poportss/jackportcs/internal/pkg/user/migration"
-	"gorm.io/gorm"
 )
 
 type srv struct {
@@ -22,15 +21,14 @@ func UserNewService(base *baseservice.BaseService) *srv {
 	return &srv{BaseService: base}
 }
 
-func ConfigureRoutes(r *gin.Engine, db *gorm.DB, jwtMiddleware *jwt.GinJWTMiddleware) {
-	handler := srv{baseservice.NewBaseService(db)}
-
+func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware *jwt.GinJWTMiddleware) {
+	service := UserNewService(base)
 	api := r.Group("/api")
 
 	casesRoutes := api.Group("/user")
 	casesRoutes.Use(jwtMiddleware.MiddlewareFunc())
 	{
-		casesRoutes.POST("/createUserTradeLink", handler.CreateUserTradeLinkHandler)
+		casesRoutes.POST("/createUserTradeLink", service.CreateUserTradeLinkHandler)
 	}
 
 }

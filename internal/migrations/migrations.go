@@ -41,7 +41,7 @@ func Migrate(db *gorm.DB, name string, versions []Versions) error {
 		}
 
 		// Se a versão já foi aplicada, pula para a próxima
-		if schema.Version <= index {
+		if schema.Version >= index {
 			continue
 		}
 

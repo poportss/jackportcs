@@ -6,7 +6,7 @@ type v1 struct{}
 
 func (v *v1) Migrate(db *gorm.DB) error {
 	createWalletSQL := `
-CREATE TABLE IF NOT EXISTS wallet (
+CREATE TABLE IF NOT EXISTS wallets (
     id UUID PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE,
     updated_at TIMESTAMP WITH TIME ZONE,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS wallet (
     balance INTEGER NOT NULL DEFAULT 0);`
 
 	createInventorySQL := `
-CREATE TABLE IF NOT EXISTS inventory (
+CREATE TABLE IF NOT EXISTS inventories (
     id UUID PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE,
     updated_at TIMESTAMP WITH TIME ZONE,

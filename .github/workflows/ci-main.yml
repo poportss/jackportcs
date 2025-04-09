@@ -14,6 +14,8 @@ jobs:
       DB_CONN: ${{ secrets.PROD_DB_CONN }}
       DB_MAX_CONN: ${{ secrets.PROD_DB_MAX_CONN }}
       API_PORT: ${{ secrets.PROD_API_PORT }}
+      APP_PAGARME_API: ${{ secrets.PROD_APP_PAGARME_API }}
+      STEAM_WEB_API_KEY: ${{ secrets.PROD_STEAM_WEB_API_KEY }}
 
     steps:
       - name: Checkout Código

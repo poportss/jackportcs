@@ -45,13 +45,25 @@ func SetupJWTMiddleware(jwtKey []byte, timeout, maxRefresh time.Duration, baseSe
 				return nil, jwt.ErrMissingLoginValues
 			}
 
+			provider, _ := c.Get("provider")
+
 			var err error
 
 			authService := auth.AuthNewService(baseService)
 
-			authenticateUser, err := authService.AuthenticateUser(login)
-			if err != nil {
-				return nil, err
+			var authenticateUser *models.User
+			switch provider {
+			case "steam":
+				steamID, _ := c.Get("steamID")
+				authenticateUser, err = authService.FindOrCreateUserBySteamID(steamID.(string))
+				if err != nil {
+					return nil, err
+				}
+			default:
+				authenticateUser, err = authService.AuthenticateUser(login)
+				if err != nil {
+					return nil, err
+				}
 			}
 
 			return authenticateUser, err

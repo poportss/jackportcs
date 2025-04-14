@@ -46,7 +46,6 @@ func (s *srv) createPaymentOrder(createOrderRequest *dto.CreateOrderRequest, use
 
 func (s *srv) createPaymentCustomer(requestCustomer *dto.PagarmeCreateCustomerRequest, userID uuid.UUID) (*dto.PagarmeCreateCustomerResponse, error) {
 
-	// Create customer using the external utility
 	customer, err := utils.CreateCustomer(requestCustomer)
 	if err != nil {
 		return nil, err
@@ -54,22 +53,19 @@ func (s *srv) createPaymentCustomer(requestCustomer *dto.PagarmeCreateCustomerRe
 
 	log.Printf("Tipo de customer.Metadata: %T\n", customer.Metadata)
 
-	// Verifique o tipo e converta para um tipo adequado
 	metadataJSON, err := json.Marshal(customer.Metadata)
 	if err != nil {
 		return nil, fmt.Errorf("erro ao serializar metadata: %v", err)
 	}
 
-	// Atualize os dados no banco de dados
 	err = s.DB.Model(&models.User{}).Where("id = ?", userID).Updates(map[string]interface{}{
 		"pagarme_customer_id":       customer.ProviderCustomerID,
-		"pagarme_customer_metadata": string(metadataJSON), // Converted para string JSON
+		"pagarme_customer_metadata": string(metadataJSON),
 	}).Error
 	if err != nil {
 		return nil, err
 	}
 
-	// Prepare response structure
 	customerResponse := &dto.PagarmeCreateCustomerResponse{
 		Name:         customer.Name,
 		Email:        customer.Email,
@@ -79,4 +75,34 @@ func (s *srv) createPaymentCustomer(requestCustomer *dto.PagarmeCreateCustomerRe
 	}
 
 	return customerResponse, nil
+}
+
+func (s *srv) createCustomerCard(createCard *dto.PagarmeCreateCardRequest, userID uuid.UUID) (*dto.CardResponse, error) {
+
+	var user models.User
+	if err := s.DB.Model(&models.User{}).Preload("Address").Where("id = ?", userID).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	card, err := utils.CreateCard(createCard, user)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = s.DB.Model(&models.Card{}).Create(&card).Error; err != nil {
+		return nil, err
+	}
+
+	cardResponse := &dto.CardResponse{
+		ID:             card.ID,
+		CreatedAt:      card.CreatedAt,
+		LastFourDigits: card.LastFourDigits,
+		PaymentMethod:  card.PaymentMethod,
+		HolderName:     card.HolderName,
+		HolderDocument: card.HolderDocument,
+		ExpMonth:       card.ExpMonth,
+		ExpYear:        card.ExpYear,
+	}
+
+	return cardResponse, nil
 }

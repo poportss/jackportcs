@@ -1,42 +1,48 @@
 package dto
 
+import "github.com/poportss/jackportcs/internal/models"
+
 type PagarmeCreateCustomerRequest struct {
-	Name         string `json:"name"`
-	Email        string `json:"email"`
-	Document     string `json:"document"`
-	DocumentType string `json:"document_type"`
-	Type         string `json:"type"`
-
-	Address PagarmeAddress `json:"address"`
-	Phones  PagarmePhones  `json:"phones"`
-}
-
-type PagarmeAddress struct {
-	ID        string `json:"id,omitempty"`
-	Line1     string `json:"line_1"`
-	Line2     string `json:"line_2"`
-	ZipCode   string `json:"zip_code"`
-	City      string `json:"city"`
-	State     string `json:"state"`
-	Country   string `json:"country"`
-	CreatedAt string `json:"created_at,omitempty"`
-	UpdatedAt string `json:"updated_at,omitempty"`
-}
-
-type PagarmePhones struct {
-	HomePhone PagarmeHomePhone `json:"home_phone"`
-}
-
-type PagarmeHomePhone struct {
-	CountryCode string `json:"country_code"`
-	AreaCode    string `json:"area_code"`
-	Number      string `json:"number"`
+	Name         string                `json:"name"`
+	Email        string                `json:"email"`
+	Document     string                `json:"document"`
+	DocumentType string                `json:"documentType"`
+	Type         string                `json:"type"`
+	Address      models.PagarmeAddress `json:"address"`
+	Phones       models.PagarmePhones  `json:"phones"`
 }
 
 type PagarmeCreateCustomerResponse struct {
 	Name         string `json:"name"`
 	Email        string `json:"email"`
 	Document     string `json:"document"`
-	DocumentType string `json:"document_type"`
+	DocumentType string `json:"documentType"`
 	Type         string `json:"type"`
+}
+
+type PagarmeCreateCardRequest struct {
+	Number         string                          `json:"number"`
+	HolderName     string                          `json:"holderName"`
+	HolderDocument string                          `json:"holderDocument"`
+	ExpMonth       int                             `json:"expMonth"`
+	ExpYear        int                             `json:"expYear"`
+	CVV            string                          `json:"cvv"`
+	Type           models.PaymentMethod            `json:"type"`
+	Options        models.PagarmeCreateCardOptions `json:"options"`
+}
+
+type PagarmeCreateCardResponse struct {
+	ID             string                `json:"id"`
+	FirstSixDigits string                `json:"firstSixDigits"`
+	LastFourDigits string                `json:"lastFourDigits"`
+	Brand          string                `json:"brand"`
+	HolderName     string                `json:"holderName"`
+	HolderDocument string                `json:"holderDocument"`
+	ExpMonth       int                   `json:"expMonth"`
+	ExpYear        int                   `json:"expYear"`
+	Status         string                `json:"status"`
+	Type           string                `json:"type"`
+	CreatedAt      string                `json:"createdAt"`
+	UpdatedAt      string                `json:"updatedAt"`
+	BillingAddress models.PagarmeAddress `json:"billingAddress"`
 }

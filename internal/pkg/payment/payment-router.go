@@ -14,17 +14,17 @@ type srv struct {
 	BraipApiToken   string
 }
 
-func PaymentNewService(base *baseservice.BaseService, braipApiBaseURL string, braipApiToken string) *srv {
+func PaymentNewService(base *baseservice.BaseService) *srv {
 	err := migrations.Migrate(base.DB, "payment", migration.Versions())
 	if err != nil {
 		panic("❌ Erro ao rodar as migrations: " + err.Error())
 	}
 
-	return &srv{BaseService: base, BraipApiBaseURL: braipApiBaseURL, BraipApiToken: braipApiToken}
+	return &srv{BaseService: base}
 }
 
-func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware *jwt.GinJWTMiddleware, braipApiBaseURL string, braipApiToken string) {
-	service := PaymentNewService(base, braipApiBaseURL, braipApiToken)
+func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware *jwt.GinJWTMiddleware) {
+	service := PaymentNewService(base)
 
 	api := r.Group("/api")
 	paymentRoutes := api.Group("/payment")
@@ -32,5 +32,6 @@ func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware
 	{
 		paymentRoutes.POST("/createPaymentOrder", service.CreatePaymentOrderHandler)
 		paymentRoutes.POST("/createPaymentCustomer", service.CreatePaymentCustomerHandler)
+		paymentRoutes.POST("/createCustomerCard", service.CreateCustomerCardHandler)
 	}
 }

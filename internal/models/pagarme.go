@@ -16,45 +16,21 @@ type PagarmeCreateCardRequest struct {
 	Options        PagarmeCreateCardOptions `json:"options"`
 }
 
-type PagarmeCreateCardOptions struct {
-	VerifyCard bool `json:"verify_card"`
-}
-
 type PagarmeCreateCardResponse struct {
-	ID             string `json:"id"`
-	FirstSixDigits string `json:"first_six_digits"`
-	LastFourDigits string `json:"last_four_digits"`
-	Brand          string `json:"brand"`
-	HolderName     string `json:"holder_name"`
-	HolderDocument string `json:"holder_document"`
-	ExpMonth       int    `json:"exp_month"`
-	ExpYear        int    `json:"exp_year"`
-	Status         string `json:"status"`
-	Type           string `json:"type"`
-	CreatedAt      string `json:"created_at"`
-	UpdatedAt      string `json:"updated_at"`
-
-	BillingAddress PagarmeAddress `json:"billing_address"`
-
-	Customer struct {
-		ID           string `json:"id"`
-		Name         string `json:"name"`
-		Email        string `json:"email"`
-		Document     string `json:"document"`
-		DocumentType string `json:"document_type"`
-		Type         string `json:"type"`
-		Delinquent   bool   `json:"delinquent"`
-		CreatedAt    string `json:"created_at"`
-		UpdatedAt    string `json:"updated_at"`
-
-		Customer struct {
-			Phones struct {
-				CountryCode string `json:"country_code"`
-				Number      string `json:"number"`
-				AreaCode    string `json:"area_code"`
-			} `json:"home_phone"`
-		} `json:"phones"`
-	} `json:"customer"`
+	ID             string                  `json:"id"`
+	FirstSixDigits string                  `json:"first_six_digits"`
+	LastFourDigits string                  `json:"last_four_digits"`
+	Brand          string                  `json:"brand"`
+	HolderName     string                  `json:"holder_name"`
+	HolderDocument string                  `json:"holder_document"`
+	ExpMonth       int                     `json:"exp_month"`
+	ExpYear        int                     `json:"exp_year"`
+	Status         string                  `json:"status"`
+	Type           string                  `json:"type"`
+	CreatedAt      string                  `json:"created_at"`
+	UpdatedAt      string                  `json:"updated_at"`
+	BillingAddress PagarmeAddress          `json:"billing_address"`
+	Customer       PagarmeCustomerResponse `json:"customer"`
 }
 
 type PagarmeCreateCustomerRequest struct {
@@ -196,4 +172,40 @@ type PagarmeOrderHook struct {
 	Status    string       `json:"string"`
 	CreatedAt time.Time    `json:"created_at"`
 	Data      PagarmeOrder `json:"data"`
+}
+
+type PagarmeCreateCard struct {
+	Number         string `json:"number"`
+	HolderName     string `json:"holder_name"`
+	HolderDocument string `json:"holder_document"`
+	ExpMonth       int    `json:"exp_month"`
+	ExpYear        int    `json:"exp_year"`
+	CVV            string `json:"cvv"`
+
+	BillingAddress PagarmeAddress           `json:"billing_address"`
+	Options        PagarmeCreateCardOptions `json:"options"`
+}
+
+type PagarmeCreateCardOptions struct {
+	VerifyCard bool `json:"verify_card"`
+}
+
+type PagarmeCustomerResponse struct {
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	Document     string `json:"document"`
+	DocumentType string `json:"document_type"`
+	Type         string `json:"type"`
+	Delinquent   bool   `json:"delinquent"`
+	CreatedAt    string `json:"created_at"`
+	UpdatedAt    string `json:"updated_at"`
+
+	Customer struct {
+		Phones struct {
+			CountryCode string `json:"country_code"`
+			Number      string `json:"number"`
+			AreaCode    string `json:"area_code"`
+		} `json:"home_phone"`
+	} `json:"phones"`
 }

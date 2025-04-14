@@ -157,3 +157,83 @@ func CreateCustomer(requestCustomer *dto.PagarmeCreateCustomerRequest) (*models.
 
 	return pagarmeCustomer, nil
 }
+
+func CreateCard(createCard *dto.PagarmeCreateCardRequest, user models.User) (*models.Card, error) {
+
+	req := &models.PagarmeCreateCardRequest{
+		Number:         createCard.Number,
+		HolderName:     createCard.HolderName,
+		HolderDocument: createCard.HolderDocument,
+		ExpMonth:       createCard.ExpMonth,
+		ExpYear:        createCard.ExpYear,
+		CVV:            createCard.CVV,
+		BillingAddress: models.PagarmeAddress{
+			Line1:   user.Address.Address,
+			Line2:   user.Address.Complement,
+			ZipCode: user.Address.ZipCode,
+			City:    user.Address.City,
+			State:   user.Address.State,
+			Country: user.Address.State,
+		},
+		Options: models.PagarmeCreateCardOptions{
+			VerifyCard: true,
+		},
+	}
+
+	reqBytes, err := json.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create the card on pagarme provider: %w", err)
+	}
+
+	url := fmt.Sprintf("https://api.pagar.me/core/v5/customers/%s/cards", user.PagarmeCustomerID)
+
+	httpReq, err := http.NewRequest("POST", url, bytes.NewBuffer(reqBytes))
+	if err != nil {
+		return nil, fmt.Errorf("erro ao montar requisição: %w", err)
+	}
+
+	httpReq.Header.Set("Content-Type", "application/json")
+
+	apiKey := os.Getenv("PAGARME_SECRET_KEY")
+
+	httpReq.SetBasicAuth(apiKey, "")
+
+	client := http.Client{Timeout: 30 * time.Second}
+	res, err := client.Do(httpReq)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao enviar pedido para o Pagar.me: %w", err)
+	}
+	defer res.Body.Close()
+
+	resBody, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao ler resposta do Pagar.me: %w", err)
+	}
+
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		return nil, fmt.Errorf("erro na resposta do Pagar.me: %s", resBody)
+	}
+
+	var pagarmeCard dto.PagarmeCreateCardResponse
+
+	if err := json.Unmarshal(resBody, &pagarmeCard); err != nil {
+		return nil, fmt.Errorf("failed to create the card on pagarme provider: %w", err)
+	}
+
+	cardResponse := &models.Card{
+		UserID:         user.ID,
+		ProviderCardID: pagarmeCard.ID,
+		FirstSixDigits: pagarmeCard.FirstSixDigits,
+		LastFourDigits: pagarmeCard.LastFourDigits,
+		PaymentMethod:  createCard.Type,
+		Number:         createCard.Number,
+		HolderName:     pagarmeCard.HolderName,
+		HolderDocument: pagarmeCard.HolderDocument,
+		ExpMonth:       pagarmeCard.ExpMonth,
+		ExpYear:        pagarmeCard.ExpYear,
+		Metadata:       resBody,
+		Active:         true,
+	}
+
+	return cardResponse, nil
+}

@@ -54,3 +54,26 @@ func (s *srv) CreatePaymentCustomerHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"customer": customer})
 }
+
+func (s *srv) CreateCustomerCardHandler(c *gin.Context) {
+	var createCard *dto.PagarmeCreateCardRequest
+
+	if err := c.ShouldBindJSON(&createCard); err != nil {
+		rest.ResponseBadRequest(c, fmt.Errorf("Dados inválidos"))
+		return
+	}
+
+	userID, err := middleware.ExtractUserIDFromContext(c)
+	if err != nil {
+		rest.ResponseBadRequest(c, err)
+		return
+	}
+
+	cardResponse, err := s.createCustomerCard(createCard, userID)
+	if err != nil {
+		rest.ResponseInternalServerError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"card": cardResponse})
+}

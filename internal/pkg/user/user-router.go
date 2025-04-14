@@ -25,10 +25,11 @@ func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware
 	service := UserNewService(base)
 	api := r.Group("/api")
 
-	casesRoutes := api.Group("/user")
-	casesRoutes.Use(jwtMiddleware.MiddlewareFunc())
+	userRoutes := api.Group("/user")
+	userRoutes.Use(jwtMiddleware.MiddlewareFunc())
 	{
-		casesRoutes.POST("/createUserTradeLink", service.CreateUserTradeLinkHandler)
+		userRoutes.POST("/createUserTradeLink", service.CreateUserTradeLinkHandler)
+		userRoutes.POST("/createUserAddress", service.CreateUserAddressHandler)
 	}
 
 }

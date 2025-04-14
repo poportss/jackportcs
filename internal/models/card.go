@@ -19,7 +19,6 @@ type Card struct {
 	HolderDocument string         `json:"holderDocument,omitempty" gorm:"-"`
 	ExpMonth       int            `json:"expMonth,omitempty" validate:"required"`
 	ExpYear        int            `json:"expYear,omitempty" validate:"required"`
-	CVV            string         `json:"cvv,omitempty" gorm:"-" validate:"required,max=4,min=3"`
 	Metadata       datatypes.JSON `json:"metadata"`
-	Active         *bool          `json:"active"`
+	Active         bool           `json:"active"`
 }

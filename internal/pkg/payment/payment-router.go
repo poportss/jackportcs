@@ -32,5 +32,6 @@ func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware
 	{
 		paymentRoutes.POST("/createPaymentOrder", service.CreatePaymentOrderHandler)
 		paymentRoutes.POST("/createPaymentCustomer", service.CreatePaymentCustomerHandler)
+		paymentRoutes.POST("/createCustomerCard", service.CreateCustomerCardHandler)
 	}
 }

@@ -77,3 +77,20 @@ func (s *srv) CreateCustomerCardHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"card": cardResponse})
 }
+
+func (s *srv) PagarmeWebhookHandler(c *gin.Context) {
+	var webhookOrder *dto.WebhookOrder
+
+	if err := c.ShouldBindJSON(&webhookOrder); err != nil {
+		rest.ResponseBadRequest(c, fmt.Errorf("Dados inválidos"))
+		return
+	}
+
+	err := s.pagarmeWebhook(webhookOrder)
+	if err != nil {
+		rest.ResponseInternalServerError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"webhookOrder": webhookOrder})
+}

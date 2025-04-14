@@ -7,6 +7,7 @@ import (
 	"github.com/poportss/jackportcs/internal/dto"
 	"github.com/poportss/jackportcs/internal/models"
 	"github.com/poportss/jackportcs/internal/utils"
+	"gorm.io/gorm"
 	"log"
 )
 
@@ -105,4 +106,49 @@ func (s *srv) createCustomerCard(createCard *dto.PagarmeCreateCardRequest, userI
 	}
 
 	return cardResponse, nil
+}
+
+func (s *srv) pagarmeWebhook(order *dto.WebhookOrder) error {
+	switch order.Type {
+	case string(models.WebhookTypePaid):
+		return s.processOrderPaid(order)
+	default:
+		return fmt.Errorf("unsupported webhook type: %s", order.Type)
+	}
+}
+
+func (s *srv) processOrderPaid(order *dto.WebhookOrder) error {
+	if order == nil {
+		return fmt.Errorf("webhook payload is nil")
+	}
+
+	var paymentOrder models.PaymentOrder
+	if err := s.DB.Where("reference_id = ?", order.Data.ID).First(&paymentOrder).Error; err != nil {
+		log.Printf("❌ Failed to find PaymentOrder: %v", err)
+		return fmt.Errorf("webhook error: %w", err)
+	}
+
+	var user models.User
+	if err := s.DB.Preload("Wallet").Where("pagarme_customer_id = ?", paymentOrder.CustomerID).First(&user).Error; err != nil {
+		log.Printf("❌ Failed to find User: %v", err)
+		return fmt.Errorf("webhook error: %w", err)
+	}
+
+	if user.Wallet != nil {
+		if err := s.DB.Model(&models.Wallet{}).Where("id = ?", user.WalletID).UpdateColumn("balance", gorm.Expr("balance + ?", paymentOrder.Amount)).Error; err != nil {
+			log.Printf("❌ Failed to update wallet balance: %v", err)
+			return fmt.Errorf("webhook error: %w", err)
+		}
+	} else {
+		log.Printf("⚠️ User %s has no wallet", user.ID)
+		return fmt.Errorf("wallet not found for user %s", user.ID)
+	}
+
+	if err := s.DB.Model(&models.PaymentOrder{}).Where("reference_id = ?", order.Data.ID).UpdateColumn("status", order.Data.Status).Error; err != nil {
+		log.Printf("❌ Failed to update payment order status: %v", err)
+		return fmt.Errorf("webhook error: %w", err)
+	}
+
+	log.Printf("✅ Successfully processed paid order: %s", order.Data.ID)
+	return nil
 }

@@ -5,10 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/poportss/jackportcs/internal/baseservice"
 	"github.com/poportss/jackportcs/internal/database"
-	"github.com/poportss/jackportcs/internal/pkg/auth"
-	"github.com/poportss/jackportcs/internal/pkg/cases"
-	"github.com/poportss/jackportcs/internal/pkg/skins"
-	"github.com/poportss/jackportcs/internal/pkg/user"
 	"github.com/poportss/jackportcs/internal/routes"
 	"os"
 )
@@ -21,12 +17,7 @@ func main() {
 	}
 
 	r := gin.Default()
-
 	baseService := baseservice.NewBaseService(db)
-	auth.AuthNewService(baseService)
-	cases.CasesNewService(baseService)
-	skins.SkinNewService(baseService)
-	user.UserNewService(baseService)
 
 	routes.SetupRoutes(r, baseService)
 
@@ -37,6 +28,11 @@ func main() {
 	}
 
 	fmt.Printf("🌍 API rodando na porta %s\n", apiPort)
+
+	// 🔎 Lista todos os endpoints
+	for _, ri := range r.Routes() {
+		fmt.Printf("🔗 %s %s\n", ri.Method, ri.Path)
+	}
 
 	err = r.Run(":" + apiPort)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"github.com/poportss/jackportcs/internal/middleware"
 	"github.com/poportss/jackportcs/internal/pkg/auth"
 	"github.com/poportss/jackportcs/internal/pkg/cases"
+	"github.com/poportss/jackportcs/internal/pkg/payment"
 	"github.com/poportss/jackportcs/internal/pkg/skins"
 	"github.com/poportss/jackportcs/internal/pkg/user"
 	"log"
@@ -21,8 +22,9 @@ func SetupRoutes(r *gin.Engine, baseService *baseservice.BaseService) {
 	}
 
 	// Registrar rotas
-	auth.ConfigureRoutes(r, baseService.DB, jwtMiddleware)
-	cases.ConfigureRoutes(r, baseService.DB, jwtMiddleware)
-	skins.ConfigureRoutes(r, baseService.DB, jwtMiddleware)
-	user.ConfigureRoutes(r, baseService.DB, jwtMiddleware)
+	auth.ConfigureRoutes(r, baseService, jwtMiddleware)
+	cases.ConfigureRoutes(r, baseService, jwtMiddleware)
+	skins.ConfigureRoutes(r, baseService, jwtMiddleware)
+	user.ConfigureRoutes(r, baseService, jwtMiddleware)
+	payment.ConfigureRoutes(r, baseService, jwtMiddleware)
 }

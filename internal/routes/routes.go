@@ -14,7 +14,7 @@ import (
 )
 
 // SetupRoutes configura todas as rotas da aplicação
-func SetupRoutes(r *gin.Engine, baseService *baseservice.BaseService, braipApiBaseURL, braipApiToken string) {
+func SetupRoutes(r *gin.Engine, baseService *baseservice.BaseService) {
 	// Configura o middleware JWT
 	jwtMiddleware, err := middleware.SetupJWTMiddleware([]byte(""), time.Hour, time.Hour*24, baseService)
 	if err != nil {
@@ -26,5 +26,5 @@ func SetupRoutes(r *gin.Engine, baseService *baseservice.BaseService, braipApiBa
 	cases.ConfigureRoutes(r, baseService, jwtMiddleware)
 	skins.ConfigureRoutes(r, baseService, jwtMiddleware)
 	user.ConfigureRoutes(r, baseService, jwtMiddleware)
-	payment.ConfigureRoutes(r, baseService, jwtMiddleware, braipApiBaseURL, braipApiToken)
+	payment.ConfigureRoutes(r, baseService, jwtMiddleware)
 }

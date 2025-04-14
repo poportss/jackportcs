@@ -17,13 +17,9 @@ func main() {
 	}
 
 	r := gin.Default()
-
-	braipApiBaseURL := os.Getenv("BRAIP_API_BASE_URL")
-	braipApiToken := os.Getenv("BRAIP_API_TOKEN")
-
 	baseService := baseservice.NewBaseService(db)
 
-	routes.SetupRoutes(r, baseService, braipApiBaseURL, braipApiToken)
+	routes.SetupRoutes(r, baseService)
 
 	apiPort := os.Getenv("API_PORT")
 	if apiPort == "" {

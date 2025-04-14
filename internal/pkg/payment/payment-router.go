@@ -34,4 +34,7 @@ func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware
 		paymentRoutes.POST("/createPaymentCustomer", service.CreatePaymentCustomerHandler)
 		paymentRoutes.POST("/createCustomerCard", service.CreateCustomerCardHandler)
 	}
+
+	paymentPagarmeRoutes := api.Group("/payment/pagarme")
+	paymentPagarmeRoutes.POST("webhook", service.PagarmeWebhookHandler)
 }

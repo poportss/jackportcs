@@ -15,7 +15,7 @@ import (
 )
 
 func CreatePaymentOrder(user models.User, order *dto.CreateOrderRequest) (*models.PaymentOrder, error) {
-	if order.Amount < 5000 {
+	if order.Amount < 500 {
 		return nil, errors.New("valor da compra não ultrapassa o valor mínimo de compra")
 	}
 

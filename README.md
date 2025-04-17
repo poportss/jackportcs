@@ -34,11 +34,11 @@ go mod download
 3. Configure environment variables:
 Create a `.env` file in the project root with the following variables:
 ```
-DB_HOST=your_host
-DB_USER=your_user
-DB_PASSWORD=your_password
-DB_NAME=your_database
-DB_PORT=your_port
+DB_CONN="your_db_con"
+DB_MAX_CONN="your_port"
+API_PORT="your_port"
+APP_PAGARME_API="pagarme_key"
+STEAM_WEB_API_KEY="your_steam_api"
 ```
 
 4. Run database migrations:

@@ -30,3 +30,14 @@ func (s *srv) ListAllCasesHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, allCases)
 }
+
+func (s *srv) GetCaseByIDHandler(c *gin.Context) {
+	caseID := c.Param("ID")
+
+	caseUnit, err := s.getCaseByID(caseID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, caseUnit)
+}

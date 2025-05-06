@@ -29,7 +29,8 @@ func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware
 	skinRoutes := api.Group("/skin")
 	skinRoutes.Use(jwtMiddleware.MiddlewareFunc())
 	{
-		skinRoutes.POST("/createSkin", service.CreateCaseHandler)
+		skinRoutes.POST("/createSkin", service.CreateSkinHandler)
+		skinRoutes.POST("/wearAmount", service.CreateWearAmountHandler)
 		skinRoutes.GET("/listAllSkins", service.ListAllSkinsHandler)
 	}
 }

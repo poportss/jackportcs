@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (s *srv) CreateCaseHandler(c *gin.Context) {
+func (s *srv) CreateSkinHandler(c *gin.Context) {
 	var skin dto.Skin
 
 	if err := c.ShouldBindJSON(&skin); err != nil {
@@ -15,6 +15,22 @@ func (s *srv) CreateCaseHandler(c *gin.Context) {
 	}
 
 	skinModel, err := s.createSkin(skin)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, skinModel)
+}
+
+func (s *srv) CreateWearAmountHandler(c *gin.Context) {
+	var wearAmount dto.WearAmount
+
+	if err := c.ShouldBindJSON(&wearAmount); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Dados inválidos"})
+		return
+	}
+
+	skinModel, err := s.createWearAmount(wearAmount)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}

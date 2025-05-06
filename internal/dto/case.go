@@ -19,3 +19,7 @@ type CaseResponse struct {
 	Price     int64          `json:"price"`
 	Skins     []*models.Skin `json:"skins"`
 }
+
+type SteamIDRequest struct {
+	SteamID string `json:"steamID"`
+}

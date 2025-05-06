@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
 	"github.com/poportss/jackportcs/internal/baseservice"
-	"github.com/poportss/jackportcs/internal/dto"
 	"github.com/poportss/jackportcs/internal/models"
 	"github.com/poportss/jackportcs/internal/pkg/auth"
 	"time"
@@ -40,10 +39,6 @@ func SetupJWTMiddleware(jwtKey []byte, timeout, maxRefresh time.Duration, baseSe
 		},
 
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var login dto.Login
-			if err := c.ShouldBind(&login); err != nil {
-				return nil, jwt.ErrMissingLoginValues
-			}
 
 			provider, _ := c.Get("provider")
 
@@ -60,10 +55,7 @@ func SetupJWTMiddleware(jwtKey []byte, timeout, maxRefresh time.Duration, baseSe
 					return nil, err
 				}
 			default:
-				authenticateUser, err = authService.AuthenticateUser(login)
-				if err != nil {
-					return nil, err
-				}
+				return nil, err
 			}
 
 			return authenticateUser, err

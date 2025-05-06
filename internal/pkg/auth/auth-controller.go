@@ -1,42 +1,46 @@
 package auth
 
 import (
-	"net/http"
-
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
-	"github.com/poportss/jackportcs/internal/baseservice"
-	"github.com/solovev/steam_go"
+	"github.com/poportss/jackportcs/internal/dto"
+	"net/http"
 )
 
-func SteamLoginHandler(jwtMiddleware *jwt.GinJWTMiddleware, base *baseservice.BaseService) gin.HandlerFunc {
+func (s *srv) SteamLoginHandler(jwtMiddleware *jwt.GinJWTMiddleware) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		openID := steam_go.NewOpenId(c.Request)
+		var steamIDRequest dto.SteamIDRequest
 
-		switch openID.Mode() {
-		case "":
-			c.Redirect(http.StatusFound, openID.AuthUrl())
+		if err := c.ShouldBindJSON(&steamIDRequest); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Dados inválidos"})
 			return
-		case "cancel":
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Login cancelado pelo usuário"})
-			return
-		default:
-			steamID, err := openID.ValidateAndGetId()
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro validando Steam login"})
-				return
-			}
-
-			service := AuthNewService(base)
-			user, err := service.FindOrCreateUserBySteamID(steamID)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar/criar usuário"})
-				return
-			}
-			c.Set("provider", "steam")
-			c.Set("steamID", user.SteamID)
-			c.Set(jwtMiddleware.IdentityKey, user)
-			jwtMiddleware.LoginHandler(c)
 		}
+
+		user, err := s.FindOrCreateUserBySteamID(steamIDRequest.SteamID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar/criar usuário"})
+			return
+		}
+
+		c.Set("provider", "steam")
+		c.Set("steamID", user.SteamID)
+		c.Set(jwtMiddleware.IdentityKey, user)
+		jwtMiddleware.LoginHandler(c)
 	}
+}
+
+func (s *srv) Me(c *gin.Context) {
+	steamID := c.Query("steamID")
+	if steamID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "steamID não fornecido"})
+		return
+	}
+
+	user, err := s.FindUserBySteamID(steamID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar/criar usuário"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": user})
 }

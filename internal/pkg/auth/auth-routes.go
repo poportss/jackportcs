@@ -24,13 +24,15 @@ func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware
 	if err != nil {
 		panic("❌ Erro ao rodar as migrations: " + err.Error())
 	}
-
+	service := AuthNewService(base)
 	authRoutes := r.Group("/api/auth")
 	{
 		authRoutes.POST("/login", jwtMiddleware.LoginHandler)
 		authRoutes.GET("/refresh_token", jwtMiddleware.RefreshHandler)
 
-		authRoutes.GET("/steam", SteamLoginHandler(jwtMiddleware, base))
+		authRoutes.POST("/steam/login", service.SteamLoginHandler(jwtMiddleware))
+
+		authRoutes.GET("me", service.Me)
 
 		authRoutes.Use(jwtMiddleware.MiddlewareFunc())
 		{

@@ -27,7 +27,7 @@ func (s *srv) AuthenticateUser(login dto.Login) (*models.User, error) {
 
 func (s *srv) FindOrCreateUserBySteamID(steamID string) (*models.User, error) {
 	var user models.User
-	if err := s.BaseService.DB.Where("steam_id = ?", steamID).First(&user).Error; err == nil {
+	if err := s.BaseService.DB.Where("steam_id = ?", steamID).Preload("Wallet").Preload("Inventory").First(&user).Error; err == nil {
 		return &user, nil
 	}
 
@@ -59,4 +59,29 @@ func (s *srv) FindOrCreateUserBySteamID(steamID string) (*models.User, error) {
 	}
 
 	return &user, nil
+}
+
+func (s *srv) FindUserBySteamID(steamID string) (*dto.UserResponse, error) {
+	var user models.User
+	if err := s.BaseService.DB.Where("steam_id = ?", steamID).Preload("Wallet").Preload("Inventory").First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	name, avatar, err := utils.FetchSteamProfile(os.Getenv("STEAM_WEB_API_KEY"), steamID)
+	if err != nil {
+		name = "Jogador Steam"
+	}
+
+	userResponse := dto.UserResponse{
+		ID:        user.ID,
+		Name:      name,
+		AvatarUrl: avatar,
+		TradeLink: user.TradeLink,
+	}
+
+	if user.Wallet != nil {
+		userResponse.Wallet = user.Wallet
+	}
+
+	return &userResponse, nil
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/poportss/jackportcs/internal/baseservice"
 	"github.com/poportss/jackportcs/internal/database"
@@ -17,6 +18,16 @@ func main() {
 	}
 
 	r := gin.Default()
+
+	// Configuração do CORS
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"} // URL do seu frontend
+	config.AllowCredentials = true
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+
+	r.Use(cors.New(config))
+
 	baseService := baseservice.NewBaseService(db)
 
 	routes.SetupRoutes(r, baseService)

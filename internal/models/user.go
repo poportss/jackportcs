@@ -16,11 +16,11 @@ type User struct {
 	PagarmeCustomerID       string         `json:"pagarmeCustomerID"`
 	PagarmeCustomerMetadata datatypes.JSON `json:"pagarmeCustomerMetadata"`
 
-	Wallet    *Wallet     `json:"wallet" gorm:"foreignKey:WalletID"`
-	Inventory *Inventory  `json:"inventory" gorm:"foreignKey:InventoryID"`
-	Address   UserAddress `json:"address" gorm:"foreignKey:UserID;references:ID"`
+	Wallet    *Wallet      `json:"wallet" gorm:"foreignKey:WalletID"`
+	Inventory *Inventory   `json:"inventory" gorm:"foreignKey:InventoryID"`
+	Address   *UserAddress `json:"address" gorm:"foreignKey:UserID;references:ID"`
 
-	Provider string `json:"provider"`
+	Provider string `json:"provider" gorm:"-"`
 }
 
 type UserAddress struct {

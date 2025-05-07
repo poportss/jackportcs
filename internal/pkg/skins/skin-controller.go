@@ -46,3 +46,19 @@ func (s *srv) ListAllSkinsHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, skins)
 }
+
+func (s *srv) CreateRarityTypeHandler(c *gin.Context) {
+	var rarityType dto.RarityType
+
+	if err := c.ShouldBindJSON(&rarityType); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Dados inválidos"})
+		return
+	}
+
+	skinModel, err := s.createRarityType(rarityType)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, skinModel)
+}

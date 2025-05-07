@@ -9,10 +9,11 @@ import (
 func (s *srv) createSkin(skin dto.Skin) (*models.Skin, error) {
 
 	skinModel := &models.Skin{
-		Name:       skin.Name,
-		ImageURL:   skin.ImageURL,
-		Value:      skin.Value,
-		WearAmount: uuid.FromStringOrNil(skin.WearAmount),
+		Name:         skin.Name,
+		ImageURL:     skin.ImageURL,
+		Value:        skin.Value,
+		WearAmountID: uuid.FromStringOrNil(skin.WearAmount),
+		RarityTypeID: uuid.FromStringOrNil(skin.RarityType),
 	}
 
 	err := s.DB.Create(&skinModel).Error
@@ -59,4 +60,19 @@ func (s *srv) listAllSkins() ([]*dto.SkinResponse, error) {
 	}
 
 	return skinsResponse, nil
+}
+
+func (s *srv) createRarityType(rarityType dto.RarityType) (*models.RarityType, error) {
+
+	rarityTypeModel := &models.RarityType{
+		Description: rarityType.Description,
+		Priority:    rarityType.Priority,
+	}
+
+	err := s.DB.Create(&rarityTypeModel).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return rarityTypeModel, nil
 }

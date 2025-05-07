@@ -120,7 +120,7 @@ func (s *srv) getCaseByID(caseID string) (*dto.CaseDetailsResponse, error) {
 
 	for _, prob := range probabilities {
 		var skin models.Skin
-		if err := s.DB.Where("id = ?", prob.SkinID).First(&skin).Error; err != nil {
+		if err := s.DB.Where("id = ?", prob.SkinID).Preload("RarityType").First(&skin).Error; err != nil {
 			return nil, err
 		}
 
@@ -131,6 +131,7 @@ func (s *srv) getCaseByID(caseID string) (*dto.CaseDetailsResponse, error) {
 				ImageURL:  skin.ImageURL,
 				Name:      skin.Name,
 				Value:     skin.Value,
+				Rarity:    skin.RarityType.Description,
 			},
 			Probability: prob.Probability,
 		})

@@ -31,6 +31,7 @@ func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware
 	{
 		skinRoutes.POST("/createSkin", service.CreateSkinHandler)
 		skinRoutes.POST("/wearAmount", service.CreateWearAmountHandler)
+		skinRoutes.POST("/rarityType", service.CreateRarityTypeHandler)
 		skinRoutes.GET("/listAllSkins", service.ListAllSkinsHandler)
 	}
 }

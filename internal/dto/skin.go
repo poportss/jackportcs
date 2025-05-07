@@ -9,7 +9,13 @@ type Skin struct {
 	Name       string `json:"name"`
 	ImageURL   string `json:"imageUrl"`
 	WearAmount string `json:"wearAmount"`
+	RarityType string `json:"rarityType"`
 	Value      int64  `json:"value"`
+}
+
+type RarityType struct {
+	Description string `json:"description"`
+	Priority    int    `json:"priority"`
 }
 
 type WearAmount struct {
@@ -31,4 +37,5 @@ type SkinMetadataResponse struct {
 	Name      string    `json:"name"`
 	ImageURL  string    `json:"imageUrl"`
 	Value     int64     `json:"value"`
+	Rarity    string    `json:"rarity"`
 }

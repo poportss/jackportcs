@@ -6,6 +6,7 @@ import (
 	"github.com/poportss/jackportcs/internal/dto"
 	"github.com/poportss/jackportcs/internal/middleware"
 	"github.com/poportss/jackportcs/internal/rest"
+	"net/http"
 )
 
 func (s *srv) CreateUserTradeLinkHandler(c *gin.Context) {
@@ -52,5 +53,22 @@ func (s *srv) CreateUserAddressHandler(c *gin.Context) {
 	}
 
 	rest.ResponseDefaultSuccess(c)
+	return
+}
+
+func (s *srv) GetBalanceHandler(c *gin.Context) {
+	userID, err := middleware.ExtractUserIDFromContext(c)
+	if err != nil {
+		rest.ResponseBadRequest(c, err)
+		return
+	}
+
+	balance, err := s.getBalance(userID)
+	if err != nil {
+		rest.ResponseInternalServerError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"balance": balance})
 	return
 }

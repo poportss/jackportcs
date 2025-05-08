@@ -32,6 +32,7 @@ func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware
 		casesRoutes.POST("/createCase", service.CreateCaseHandler)
 		casesRoutes.GET("/listAllCases", service.ListAllCasesHandler)
 		casesRoutes.GET("/getCaseByID/:ID", service.GetCaseByIDHandler)
+		casesRoutes.POST("/openCaseByID/:ID", service.OpenCaseByIDHandler)
 	}
 
 }

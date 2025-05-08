@@ -19,14 +19,30 @@ func SetupJWTMiddleware(jwtKey []byte, timeout, maxRefresh time.Duration, baseSe
 		MaxRefresh:  maxRefresh,
 		IdentityKey: "id",
 
-		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if user, ok := data.(*models.User); ok {
-				return jwt.MapClaims{
-					"id":   user.ID,
-					"name": user.Name,
-				}
+		IdentityHandler: func(c *gin.Context) interface{} {
+			claims := jwt.ExtractClaims(c)
+			idStr, ok := claims["id"].(string)
+			if !ok || idStr == "" {
+				return nil
 			}
-			return jwt.MapClaims{}
+			return &models.User{
+				Base: models.Base{
+					ID: uuid.FromStringOrNil(idStr),
+				},
+			}
+		},
+
+		PayloadFunc: func(data interface{}) jwt.MapClaims {
+			user := data.(*models.User)
+
+			if user == nil {
+				return jwt.MapClaims{}
+			}
+
+			return jwt.MapClaims{
+				"id":   user.ID.String(),
+				"name": user.Name,
+			}
 		},
 
 		Authenticator: func(c *gin.Context) (interface{}, error) {

@@ -3,6 +3,8 @@ package skins
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/poportss/jackportcs/internal/dto"
+	"github.com/poportss/jackportcs/internal/middleware"
+	"github.com/poportss/jackportcs/internal/rest"
 	"net/http"
 )
 
@@ -61,4 +63,21 @@ func (s *srv) CreateRarityTypeHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, skinModel)
+}
+
+func (s *srv) sellInventorySkinHandler(c *gin.Context) {
+	inventorySkinID := c.Param("inventorySkinID")
+
+	userID, err := middleware.ExtractUserIDFromContext(c)
+	if err != nil {
+		rest.ResponseBadRequest(c, err)
+		return
+	}
+
+	err = s.sellInventorySkin(inventorySkinID, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, nil)
 }

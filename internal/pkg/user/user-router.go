@@ -30,6 +30,7 @@ func ConfigureRoutes(r *gin.Engine, base *baseservice.BaseService, jwtMiddleware
 	{
 		userRoutes.POST("/createUserTradeLink", service.CreateUserTradeLinkHandler)
 		userRoutes.POST("/createUserAddress", service.CreateUserAddressHandler)
+		userRoutes.GET("/getBalance", service.GetBalanceHandler)
 	}
 
 }

@@ -16,6 +16,17 @@ func (s *srv) createUserTradeLink(userTradeLink string, userId uuid.UUID) error 
 	return nil
 }
 
+func (s *srv) getBalance(userId uuid.UUID) (*int64, error) {
+	var user models.User
+
+	err := s.DB.Model(&models.User{}).Preload("Wallet").Where("id = ?", userId).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &user.Wallet.Balance, nil
+}
+
 func (s *srv) createUserAddress(userAddressRequest dto.UserAddress, userId uuid.UUID) error {
 
 	userAddress := &models.UserAddress{

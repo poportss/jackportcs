@@ -6,11 +6,22 @@ import (
 )
 
 type Skin struct {
+	ID         string `json:"id"`
 	Name       string `json:"name"`
 	ImageURL   string `json:"imageUrl"`
 	WearAmount string `json:"wearAmount"`
 	RarityType string `json:"rarityType"`
 	Value      int64  `json:"value"`
+}
+
+type SkinOpenedCase struct {
+	ID              uuid.UUID `json:"id"`
+	Name            string    `json:"name"`
+	ImageURL        string    `json:"imageUrl"`
+	WearAmount      string    `json:"wearAmount"`
+	RarityType      string    `json:"rarityType"`
+	Value           int64     `json:"value"`
+	InventorySkinID uuid.UUID `json:"inventorySkinID"`
 }
 
 type RarityType struct {
